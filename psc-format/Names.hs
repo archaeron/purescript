@@ -3,9 +3,11 @@
 module Names where
 
 import Prelude
-import Text.PrettyPrint.ANSI.Leijen as PP
-import Language.PureScript.Names
 import Data.List (intersperse)
+
+import Text.PrettyPrint.ANSI.Leijen as PP
+
+import Language.PureScript.Names
 
 instance Pretty (ProperName a) where
     pretty = text . runProperName
@@ -18,7 +20,7 @@ instance Pretty ModuleName where
 
 instance Pretty Ident where
     pretty (Ident i) = text i
-    pretty (GenIdent mstring int) = text "genIdent"
+    pretty (GenIdent _mstring _int) = text "genIdent"
 
 instance Pretty (OpName a) where
     pretty (OpName name) = text name

@@ -3,7 +3,9 @@
 module Comments where
 
 import Prelude
+
 import Text.PrettyPrint.ANSI.Leijen
+
 import Language.PureScript.Comments
 
 instance Pretty Comment where

@@ -3,4 +3,4 @@ module Config where
 import Prelude (Int)
 
 indentationLevel :: Int
-indentationLevel = 4
+indentationLevel = 2

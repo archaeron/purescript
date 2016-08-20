@@ -390,13 +390,21 @@ executable psc-docs
     ghc-options: -Wall -O2
 
 executable psc-format
-    build-depends: base >=4 && <5, base-compat >=0.6.0,
-                   containers -any, directory -any, filepath -any,
-                   mtl -any, optparse-applicative >= 0.12.1, parsec -any, purescript -any,
-                   time -any, transformers -any, transformers-compat -any, Glob >= 0.7 && < 0.8,
-                   aeson >= 0.8 && < 0.12, bytestring -any, utf8-string >= 1 && < 2, ansi-wl-pprint >= 0.6.7.3
+    build-depends: base >=4 && <5,
+                   optparse-applicative >= 0.12.1,
+                   purescript -any,
+                   ansi-wl-pprint >= 0.6.7.3
     main-is: Main.hs
-    other-modules: Paths_purescript, Names, Declarations, Kind, Binder, Config, Comments, Literals, Pretty, Types
+    other-modules: Names
+                   Declarations
+                   Kind
+                   Binder
+                   Config
+                   Comments
+                   Literals
+                   Module
+                   Pretty
+                   Types
     buildable: True
     hs-source-dirs: psc-format
     ghc-options: -Wall -O2

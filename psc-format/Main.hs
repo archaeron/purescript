@@ -12,92 +12,65 @@
 --
 -----------------------------------------------------------------------------
 
-{-# OPTIONS_GHC -fno-warn-orphans #-}
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE RecordWildCards  #-}
-{-# LANGUAGE TupleSections    #-}
+module Main
+    ( main
+    ) where
 
-module Main where
+import Prelude
+import System.Exit (exitFailure)
+import System.IO (stderr, stdout, hPutStrLn, hSetEncoding, utf8)
 
-import           Prelude                                 hiding (lex)
+import Text.PrettyPrint.ANSI.Leijen (displayS, renderPretty, vsep)
+import Options.Applicative
 
-import           Control.Monad
-import           Control.Monad.Error.Class               (MonadError (..))
---import Control.Monad.Writer.Strict
+import qualified Language.PureScript as P
 
-import           Data.List                               (intersperse)
-
---import Options.Applicative ((<>))
-
-import           Text.PrettyPrint.ANSI.Leijen            as PP
-
-
-import Names
-import Declarations
-import Comments
---import qualified Language.PureScript as P
---import qualified Paths_purescript as Paths
-
--- https://github.com/purescript/purescript/blob/f6f4de900a5e1705a3356e60b2d8d3589eb7d68d/src/Language/PureScript/Errors.hs#L1209-L1317
-
---import Language.PureScript.Make
-import           Data.Maybe
-import qualified Language.PureScript                     as P
-import           Language.PureScript.AST.Binders
-import           Language.PureScript.AST.Declarations    (Declaration (..),
-                                                          DeclarationRef (..), DoNotationElement (..),
-                                                          Expr (..), ImportDeclarationType (..),
-                                                          Module (Module), TypeInstanceBody (..))
-import           Language.PureScript.AST.Literals        (Literal (..))
-import           Language.PureScript.AST.SourcePos       (SourcePos, SourceSpan)
-import           Language.PureScript.Errors              as P
-import qualified Language.PureScript.Kinds               as KK
-import           Language.PureScript.Names
-import           Language.PureScript.Parser.Declarations
-import           Language.PureScript.Pretty.Common       (prettyPrintObjectKey)
-import           Language.PureScript.Pretty.Types        (prettyPrintRowWith)
-import           Language.PureScript.Types               (Type (..))
-import qualified Options.Applicative                     as Opts
-
-vSpace :: Doc
-vSpace = PP.line <> PP.line
-
-pprintModule :: Module -> Doc
-pprintModule (Module sourceSpan comments moduleName declarations exports) =
-    pretty comments PP.<$>
-        text "module" <+> pretty moduleName <+> pretty exports <+> text "where" <> vSpace <> vsep (fmap pretty declarations)
+import Module (pprintModule)
 
 data Config = Config
-  { input  :: String
-  , output :: String }
+  { _input  :: String
+  , _output :: Maybe String
+  }
 
-config :: Opts.Parser Config
+config :: Parser Config
 config = Config
-     Opts.<$> Opts.strOption
-         ( Opts.long "input"
-        Opts.<> Opts.metavar ""
-        Opts.<> Opts.help "specify path to input file" )
-     Opts.<*> Opts.strOption
-         ( Opts.long "output"
-        Opts.<> Opts.metavar ""
-        Opts.<> Opts.help "specify path to output file" )
+    <$> strOption
+        ( long "input"
+        <> short 'i'
+        <> metavar "FILE"
+        <> help "Specify path to input file"
+        )
+    <*> optional
+        ( strOption
+            ( long "output"
+            <> short 'o'
+            <> metavar "FILE"
+            <> help "Specify path to output file"
+            )
+        )
 
 runFormatter :: Config -> IO ()
 runFormatter (Config i o) = do
+    hSetEncoding stdout utf8
+    hSetEncoding stderr utf8
     inputFile <- readFile i
-    case parseModulesFromFiles id [("Main", inputFile)] of
-            Right v -> do
-                let [(_, Module _ _ _ declarations _)] = v
-                writeFile o $ displayS (renderPretty 0.9 120 . vsep $ fmap (\(_, m) -> pprintModule m) v) ""
-            Left e ->
-                putStrLn $ P.prettyPrintMultipleErrors P.defaultPPEOptions e
-runFormatter _ = return ()
+    case P.parseModulesFromFiles id [("Main", inputFile)] of
+        Right v -> do
+            case o of
+                Nothing -> putStrLn output
+                Just o' -> writeFile o' output
+            where
+                output =
+                    displayS (renderPretty 0.9 80 . vsep $ fmap (\(_, m) -> pprintModule m) v) ""
+        Left e -> do
+            hPutStrLn stderr (P.prettyPrintMultipleErrors P.defaultPPEOptions e)
+            exitFailure
 
 main :: IO ()
-main = Opts.execParser opts >>= runFormatter
-  where
-    opts = Opts.info (Opts.helper <*> config)
-      ( Opts.fullDesc
-     Opts.<> Opts.progDesc "run this program to format a purs file. "
-     Opts.<> Opts.header "psc-format - format purescript files" )
+main = execParser opts >>= runFormatter
+    where
+        opts = info (helper <*> config)
+            ( fullDesc
+            <> progDesc "Run this program to format a purs file. "
+            <> header "psc-format - Format PureScript files"
+            )
