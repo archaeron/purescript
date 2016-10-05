@@ -3,7 +3,7 @@
 module Language.PureScript.Ide.ImportsSpec where
 
 import           Protolude
-import           Unsafe                          (fromJust)
+import           Data.Maybe                      (fromJust)
 
 import qualified Language.PureScript             as P
 import           Language.PureScript.Ide.Imports
@@ -70,7 +70,7 @@ spec = do
         addValueImport i mn is =
           prettyPrintImportSection (addExplicitImport' (IdeValue (P.Ident i) wildcard) mn is)
         addOpImport op mn is =
-          prettyPrintImportSection (addExplicitImport' (IdeValueOperator op "" 2 P.Infix) mn is)
+          prettyPrintImportSection (addExplicitImport' (IdeValueOperator op (P.Qualified Nothing (Left (P.Ident ""))) 2 P.Infix Nothing) mn is)
         addDtorImport i t mn is =
           prettyPrintImportSection (addExplicitImport' (IdeDataConstructor (P.ProperName i) t wildcard) mn is)
     it "adds an implicit unqualified import" $
