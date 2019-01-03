@@ -46,7 +46,7 @@ data Environment = Environment
   -- ^ Type classes
   , kinds :: S.Set (Qualified (ProperName 'KindName))
   -- ^ Kinds in scope
-  } deriving (Show, Generic)
+  } deriving (Eq, Show, Generic)
 
 instance NFData Environment
 
@@ -69,7 +69,7 @@ data TypeClassData = TypeClassData
   -- typeClassArguments and typeClassDependencies.
   , typeClassCoveringSets :: S.Set (S.Set Int)
   -- ^ A sets of arguments that can be used to infer all other arguments.
-  } deriving (Show, Generic)
+  } deriving (Eq, Show, Generic)
 
 instance NFData TypeClassData
 
@@ -80,7 +80,7 @@ data FunctionalDependency = FunctionalDependency
   -- ^ the type arguments which determine the determined type arguments
   , fdDetermined  :: [Int]
   -- ^ the determined type arguments
-  } deriving (Show, Generic)
+  } deriving (Show, Generic, Eq)
 
 instance NFData FunctionalDependency
 

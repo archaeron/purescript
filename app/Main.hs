@@ -1,9 +1,9 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE DeriveAnyClass    #-}
+{-# LANGUAGE DeriveGeneric     #-}
+{-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE RecordWildCards   #-}
+{-# LANGUAGE TupleSections     #-}
 
 module Main where
 
@@ -12,9 +12,11 @@ import qualified Command.Compile as Compile
 import qualified Command.Docs as Docs
 import qualified Command.Hierarchy as Hierarchy
 import qualified Command.Ide as Ide
+import qualified Command.Format      as Format
 import qualified Command.Publish as Publish
 import qualified Command.REPL as REPL
 import           Data.Foldable (fold)
+import           Data.Monoid         ((<>))
 import qualified Options.Applicative as Opts
 import           System.Environment (getArgs)
 import qualified System.IO as IO
@@ -72,6 +74,9 @@ main = do
         , Opts.command "hierarchy"
             (Opts.info Hierarchy.command
               (Opts.progDesc "Generate a GraphViz directed graph of PureScript type classes"))
+        , Opts.command "format"
+            (Opts.info Format.command
+              (Opts.progDesc "Format a purescript file"))
         , Opts.command "ide"
             (Opts.info Ide.command
               (Opts.progDesc "Start or query an IDE server process"))

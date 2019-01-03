@@ -1,8 +1,8 @@
 resolver: lts-12.0
 packages:
-- '.'
+  - "."
 extra-deps:
 nix:
   enable: false
   packages:
-  - zlib
+    - zlib

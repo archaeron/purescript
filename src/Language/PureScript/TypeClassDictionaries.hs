@@ -32,7 +32,7 @@ data TypeClassDictionaryInScope v
     -- | Type class dependencies which must be satisfied to construct this dictionary
     , tcdDependencies :: Maybe [SourceConstraint]
     }
-    deriving (Show, Functor, Foldable, Traversable, Generic)
+    deriving (Show, Functor, Foldable, Traversable, Generic, Eq)
 
 instance NFData v => NFData (TypeClassDictionaryInScope v)
 

@@ -1,12 +1,12 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE DoAndIfThenElse #-}
-{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE DoAndIfThenElse   #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TupleSections     #-}
 
 module Main (main) where
 
-import Prelude ()
-import Prelude.Compat
+import           Prelude        ()
+import           Prelude.Compat
 
 import Test.Tasty
 
@@ -14,13 +14,14 @@ import qualified TestCompiler
 import qualified TestCoreFn
 import qualified TestDocs
 import qualified TestHierarchy
+import qualified TestFormat
 import qualified TestPrimDocs
 import qualified TestPsci
 import qualified TestIde
 import qualified TestPscPublish
 import qualified TestUtils
 
-import System.IO (hSetEncoding, stdout, stderr, utf8)
+import           System.IO      (hSetEncoding, stderr, stdout, utf8)
 
 main :: IO ()
 main = do
@@ -39,6 +40,7 @@ main = do
   docsTests <- TestDocs.main
   publishTests <- TestPscPublish.main
   hierarchyTests <- TestHierarchy.main
+  formatTest <- TestFormat.main
 
   defaultMain $
     testGroup
@@ -50,6 +52,7 @@ main = do
       , docsTests
       , publishTests
       , hierarchyTests
+      , formatTest
       ]
 
   where
